@@ -1,1 +1,1 @@
-After saving all files to a common directory, running the files ModelOneSimulator.m and ModelTwoSimulator.m generate the data files ModelOneSimulationData.mat and ModelTwoSimulationData.mat which can then be read to create plots using the files ModelOnePlotting.m and ModelTwoPlotting.m.
+After saving all files to a common directory, running the files ModelOneSimulator.m and ModelTwoSimulator.m generate the data files ModelOneSimulationData.mat and ModelTwoSimulationData.mat which can then be read to create plots using the files ModelOnePlotter.m and ModelTwoPlotter.m.
