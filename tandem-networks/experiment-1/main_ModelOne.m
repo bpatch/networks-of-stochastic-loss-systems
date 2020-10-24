@@ -1,120 +1,119 @@
 clear all; clc; close all;
-% %% The commented code generates data that is stored in ModelOne.mat
-% rng(2020);
-% NumberSamples = 10;
-% deltaTilde = 0.1; %0.01;
-% epsilonTilde = 1/10^6;
-% BatchTime = 10;
-% DiscardedBatches = 2; 
-% BlockingSamples = 5;
-% MaxIterations = 10;
-% SuggIterations = 25;
-% k=2;
-% c1max = 40;
-% c2max = 40;
-% 
-% Alpha2 = 1;
-% Alpha3 = 1;
-% b2 = 150;
-% b3 = 5;
-% 
-% lb = zeros(1,2);
-% ub = 100*ones(1,2);
-% intcon =1:2;
-% 
-% lambda = 16;
-% CapacityCost =[0.2; 0.3];
-% Weights = 1.9;
-% Mu = [0.8;0.6]; 
-% [c1, c2, RealMax] = ExactSolutionModelOne(c1max, c2max, Weights, Mu, lambda, CapacityCost)
-% 
-% objconstr = @(x) -ObjectiveFunctionTandemModelOne(Weights, CapacityCost, BlockingSamples, x', lambda, Mu, BatchTime, DiscardedBatches, epsilonTilde, deltaTilde);
-% objconstr_BayesOpt = @(x) -ObjectiveFunctionTandemModelOne(Weights, CapacityCost, BlockingSamples, [x.capacity1; x.capacity2], lambda, Mu, BatchTime, DiscardedBatches, epsilonTilde, deltaTilde);
-% 
-% 
-% FFoptObjData = NaN(NumberSamples, MaxIterations+1);
-% FFoptCPUData = NaN(NumberSamples, MaxIterations+1);
-% FFoptSolData = NaN(MaxIterations+1,2,NumberSamples);
-% 
-% SAoptObjData = NaN(NumberSamples, MaxIterations+1);
-% SAoptCPUData = NaN(NumberSamples, MaxIterations+1);
-% SAoptSolData = NaN(MaxIterations+1,2,NumberSamples);
-% 
-% SurrOptObjData = NaN(NumberSamples, SuggIterations);
-% SurrOptCPUData = NaN(NumberSamples, SuggIterations);
-% SurrOptSolData = NaN(NumberSamples,2);
-% 
-% BayesOptObjData = NaN(NumberSamples, SuggIterations);
-% BayesOptCPUData = NaN(NumberSamples, SuggIterations);
-% BayesOptSolData = NaN(NumberSamples,2);
-% 
-% for n = 1:NumberSamples
-%     counter = 1;
-%     C0 = randi(100, 2, 1);
-%     [values1, solutions1, iterationTimes1] = FFOptSamplePathModelOne(k, C0, Weights, Mu, lambda, CapacityCost, MaxIterations, BlockingSamples, deltaTilde, epsilonTilde, BatchTime, DiscardedBatches);
-%     FFoptObjData(n, :) = values1';
-%     FFoptCPUData(n, :) = cumsum([0;iterationTimes1])';
-%     FFoptSolData(:,:,n) = solutions1;
-% 
-%     [values2, solutions2, iterationTimes2] = StochAppSamplePathModelOne(Weights, CapacityCost, MaxIterations, BlockingSamples, C0, lambda, Mu, BatchTime, DiscardedBatches, deltaTilde, epsilonTilde, Alpha2, Alpha3, b2, b3);
-%     SAoptObjData(n, :) = values2';
-%     SAoptCPUData(n, :) = cumsum(iterationTimes2)';
-%     SAoptSolData(:,:,n) = solutions2;
-%     
-%     diary(strcat('SuggOutput_Model1_Sample',num2str(n),'.txt'))
-% 
-%     opts = optimoptions('surrogateopt','MaxFunctionEvaluations',SuggIterations,'Display','iter','InitialPoints',C0, 'PlotFcn',[]);
-%     [x, fval, ~, output2] = surrogateopt(objconstr, lb, ub, intcon, opts) 
-% 
-%     diary off
-%     
-%     SurrOptSolData(n,:) = x;
-% 
-%     temp = textread(strcat('SuggOutput_Model1_Sample',num2str(n),'.txt'),'%s','delimiter','\n'); %#ok<*DTXTRD>
-%     Index = find(contains(temp,'Surrogate'),1);
-%     temp = temp(8:(Index-1),1);
-% 
-%     Index = find(contains(temp,'F-'));
-% 
-%     for i = 1:length(Index)
-%        tempIndex = find(contains(temp,'F-'),1);
-%        temp = [temp(1:(tempIndex-2),1); temp((tempIndex+2):end,1)];
-%     end
-% 
-%     for i = 1:length(temp)
-%        foo = strsplit(cell2mat(temp(i)));
-%        SurrOptCPUData(n,i) = str2double(foo(2));
-%        SurrOptObjData(n,i) = -str2double(foo(3));
-%     end
-% 
-%     delete(strcat('SuggOutput_Model1_Sample',num2str(n),'.txt'))
-% 
-% 
-%     cap1 = optimizableVariable('capacity1', [0,100],'Type','integer');
-%     cap2 = optimizableVariable('capacity2', [0,100],'Type','integer');
-% 
-%     capacity1 = C0(1,1);
-%     capacity2 = C0(2,1);
-%     
-%     C0_BayesOpt = table(capacity1, capacity2);
-%     
-%     results = bayesopt(objconstr_BayesOpt,[cap1, cap2],'Verbose',0,...
-%     'AcquisitionFunctionName','expected-improvement-plus','InitialX',C0_BayesOpt,'MaxObjectiveEvaluations',SuggIterations)
-% 
-%     BayesOptCPUData(n,:) = cumsum(results.IterationTimeTrace');
-%     BayesOptObjData(n,:) = -results.ObjectiveMinimumTrace';
-%     BayesOptSolData(n,:) = [results.XAtMinObjective.capacity1, results.XAtMinObjective.capacity2];
-%     close all;
-%     
-%     disp('Progress:')
-%     n/NumberSamples
-% end
-% 
-% SurrOptCPUData = [zeros(NumberSamples,1), SurrOptCPUData];
-% BayesOptCPUData = [zeros(NumberSamples,1), BayesOptCPUData];
-% 
-% save('ModelOne.mat')
-% 
+rng(2020);
+NumberSamples = 10;
+deltaTilde = 0.1; %0.01;
+epsilonTilde = 1/10^6;
+BatchTime = 10;
+DiscardedBatches = 2; 
+BlockingSamples = 5;
+MaxIterations = 10;
+SuggIterations = 25;
+k=2;
+c1max = 40;
+c2max = 40;
+
+Alpha2 = 1;
+Alpha3 = 1;
+b2 = 150;
+b3 = 5;
+
+lb = zeros(1,2);
+ub = 100*ones(1,2);
+intcon =1:2;
+
+lambda = 16;
+CapacityCost =[0.2; 0.3];
+Weights = 1.9;
+Mu = [0.8;0.6]; 
+[c1, c2, RealMax] = ExactSolutionModelOne(c1max, c2max, Weights, Mu, lambda, CapacityCost)
+
+objconstr = @(x) -ObjectiveFunctionTandemModelOne(Weights, CapacityCost, BlockingSamples, x', lambda, Mu, BatchTime, DiscardedBatches, epsilonTilde, deltaTilde);
+objconstr_BayesOpt = @(x) -ObjectiveFunctionTandemModelOne(Weights, CapacityCost, BlockingSamples, [x.capacity1; x.capacity2], lambda, Mu, BatchTime, DiscardedBatches, epsilonTilde, deltaTilde);
+
+
+FFoptObjData = NaN(NumberSamples, MaxIterations+1);
+FFoptCPUData = NaN(NumberSamples, MaxIterations+1);
+FFoptSolData = NaN(MaxIterations+1,2,NumberSamples);
+
+SAoptObjData = NaN(NumberSamples, MaxIterations+1);
+SAoptCPUData = NaN(NumberSamples, MaxIterations+1);
+SAoptSolData = NaN(MaxIterations+1,2,NumberSamples);
+
+SurrOptObjData = NaN(NumberSamples, SuggIterations);
+SurrOptCPUData = NaN(NumberSamples, SuggIterations);
+SurrOptSolData = NaN(NumberSamples,2);
+
+BayesOptObjData = NaN(NumberSamples, SuggIterations);
+BayesOptCPUData = NaN(NumberSamples, SuggIterations);
+BayesOptSolData = NaN(NumberSamples,2);
+
+for n = 1:NumberSamples
+    counter = 1;
+    C0 = randi(100, 2, 1);
+    [values1, solutions1, iterationTimes1] = FFOptSamplePathModelOne(k, C0, Weights, Mu, lambda, CapacityCost, MaxIterations, BlockingSamples, deltaTilde, epsilonTilde, BatchTime, DiscardedBatches);
+    FFoptObjData(n, :) = values1';
+    FFoptCPUData(n, :) = cumsum([0;iterationTimes1])';
+    FFoptSolData(:,:,n) = solutions1;
+
+    [values2, solutions2, iterationTimes2] = StochAppSamplePathModelOne(Weights, CapacityCost, MaxIterations, BlockingSamples, C0, lambda, Mu, BatchTime, DiscardedBatches, deltaTilde, epsilonTilde, Alpha2, Alpha3, b2, b3);
+    SAoptObjData(n, :) = values2';
+    SAoptCPUData(n, :) = cumsum(iterationTimes2)';
+    SAoptSolData(:,:,n) = solutions2;
+    
+    diary(strcat('SuggOutput_Model1_Sample',num2str(n),'.txt'))
+
+    opts = optimoptions('surrogateopt','MaxFunctionEvaluations',SuggIterations,'Display','iter','InitialPoints',C0, 'PlotFcn',[]);
+    [x, fval, ~, output2] = surrogateopt(objconstr, lb, ub, intcon, opts) 
+
+    diary off
+    
+    SurrOptSolData(n,:) = x;
+
+    temp = textread(strcat('SuggOutput_Model1_Sample',num2str(n),'.txt'),'%s','delimiter','\n'); %#ok<*DTXTRD>
+    Index = find(contains(temp,'Surrogate'),1);
+    temp = temp(8:(Index-1),1);
+
+    Index = find(contains(temp,'F-'));
+
+    for i = 1:length(Index)
+       tempIndex = find(contains(temp,'F-'),1);
+       temp = [temp(1:(tempIndex-2),1); temp((tempIndex+2):end,1)];
+    end
+
+    for i = 1:length(temp)
+       foo = strsplit(cell2mat(temp(i)));
+       SurrOptCPUData(n,i) = str2double(foo(2));
+       SurrOptObjData(n,i) = -str2double(foo(3));
+    end
+
+    delete(strcat('SuggOutput_Model1_Sample',num2str(n),'.txt'))
+
+
+    cap1 = optimizableVariable('capacity1', [0,100],'Type','integer');
+    cap2 = optimizableVariable('capacity2', [0,100],'Type','integer');
+
+    capacity1 = C0(1,1);
+    capacity2 = C0(2,1);
+    
+    C0_BayesOpt = table(capacity1, capacity2);
+    
+    results = bayesopt(objconstr_BayesOpt,[cap1, cap2],'Verbose',0,...
+    'AcquisitionFunctionName','expected-improvement-plus','InitialX',C0_BayesOpt,'MaxObjectiveEvaluations',SuggIterations)
+
+    BayesOptCPUData(n,:) = cumsum(results.IterationTimeTrace');
+    BayesOptObjData(n,:) = -results.ObjectiveMinimumTrace';
+    BayesOptSolData(n,:) = [results.XAtMinObjective.capacity1, results.XAtMinObjective.capacity2];
+    close all;
+    
+    disp('Progress:')
+    n/NumberSamples
+end
+
+SurrOptCPUData = [zeros(NumberSamples,1), SurrOptCPUData];
+BayesOptCPUData = [zeros(NumberSamples,1), BayesOptCPUData];
+
+save('ModelOne.mat')
+
 load('ModelOne.mat')
 
 figure()
